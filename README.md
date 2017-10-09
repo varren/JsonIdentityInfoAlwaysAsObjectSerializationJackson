@@ -23,7 +23,7 @@ annotation and has no real field.
 
 1. `@JsonIdentityInfo` - Always Serialize IDs as Fields [Issues #372][1] 
 2. More info: https://stackoverflow.com/a/46610026/1032167
-3. My example []gist demo][2] 
+3. My example [gist demo][2] 
 
 
   [1]: https://github.com/FasterXML/jackson-databind/issues/372
