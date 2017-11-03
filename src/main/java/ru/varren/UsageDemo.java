@@ -1,6 +1,7 @@
 package ru.varren;
 
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.introspect.Annotated;
@@ -92,8 +93,30 @@ public class UsageDemo {
     private static void testMultipleIdNames() throws IOException {
         System.out.println("\nMultipleId Test");
         ObjectMapper mapper = defaultObjectMapper();
+
+        System.out.println("\ninitialData");
         fullTest(mapper, initialData());
-        fullTest(mapper, anotherIdBeensInitialData());
+
+        System.out.println("\nanotherIdBeensInitialData");
+
+        System.out.println("Serialization tests:");
+        System.out.println("Contact      : " + mapper.writeValueAsString(anotherIdBeensInitialData().get(0)));
+        System.out.println("List<Contact>: " + mapper.writeValueAsString(anotherIdBeensInitialData()));
+        System.out.println("Deserialization tests:");
+
+        String json = "{\"anotherId\":1,\"n\":\"some String\"}";
+        System.out.println("From: " + json);
+        Object result = mapper.readValue(json, AnotherIdBeen.class);
+        System.out.println("To  : " + result);
+        System.out.println("To  : " + mapper.writeValueAsString(result));
+
+        json = "[{\"anotherId\":1,\"n\":\"some String\"}" +
+                ",{\"anotherId\":1,\"n\":\"some String\"}" +
+                ",{\"anotherId\":2,\"n\":\"some String 2\"}]";
+        System.out.println("From: " + json);
+        result = mapper.readValue(json, new TypeReference<List<AnotherIdBeen>>() {});
+        System.out.println("To  : " + result);
+        System.out.println("To  : " + mapper.writeValueAsString(result));
     }
 
     private static ArrayList<AnotherIdBeen> anotherIdBeensInitialData() {
@@ -117,7 +140,7 @@ public class UsageDemo {
         deserializationTest(mapper, "{\"id\":1,\"phones\":[1,2,1]}");
     }
 
-    private static void deserializationTest(ObjectMapper mapper, String json) throws IOException {
+    private static void deserializationTest( ObjectMapper mapper, String json) throws IOException {
         System.out.println("From: " + json);
         Contact result = mapper.readValue(json, Contact.class);
         System.out.println("To  : " + mapper.writeValueAsString(result));
