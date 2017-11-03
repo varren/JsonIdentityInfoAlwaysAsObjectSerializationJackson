@@ -52,7 +52,17 @@ public class UsageDemo {
 
 
     public static void main(String[] args) throws Exception {
-        // init data
+        List<Contact> contacts = initialData();
+
+        System.out.println("\nObjectMapper1 without customisations");
+        fullTest(defaultObjectMapper(), contacts);
+        System.out.println("\nObjectMapper2 with ignoreJsonIdentityInfoMapper");
+        fullTest(ignoreJsonIdentityInfoMapper(), contacts);
+        System.out.println("\nObjectMapper3 with ignoreJsonIdentityReferenceMapper");
+        fullTest(ignoreJsonIdentityReferenceMapper(), contacts);
+        testMultipleIdNames();
+    }
+    private static List<Phone> phonesInitialData() {
         Phone p1 = new Phone();
         p1.setId(3);
         p1.setN("b");
@@ -65,24 +75,39 @@ public class UsageDemo {
         phones.add(p2);
         phones.add(p1); // add p1 2 times
 
+        return phones;
+    }
+
+    private static List<Contact> initialData() {
         Contact contact = new Contact();
-        contact.setPhones(phones);
+        contact.setPhones(phonesInitialData());
         contact.setId(1);
 
         ArrayList<Contact> contacts = new ArrayList<>();
         contacts.add(contact); // add same contact 2 times
         contacts.add(contact);
-
-        System.out.println("\nObjectMapper1 without customisations");
-        fullTest(defaultObjectMapper(), contacts);
-        System.out.println("\nObjectMapper2 with ignoreJsonIdentityInfoMapper");
-        fullTest(ignoreJsonIdentityInfoMapper(), contacts);
-        System.out.println("\nObjectMapper3 with ignoreJsonIdentityReferenceMapper");
-        fullTest(ignoreJsonIdentityReferenceMapper(), contacts);
-
+        return  contacts;
     }
 
-    private static void fullTest(ObjectMapper mapper, ArrayList<Contact> testData) throws IOException {
+    private static void testMultipleIdNames() throws IOException {
+        System.out.println("\nMultipleId Test");
+        ObjectMapper mapper = defaultObjectMapper();
+        fullTest(mapper, initialData());
+        fullTest(mapper, anotherIdBeensInitialData());
+    }
+
+    private static ArrayList<AnotherIdBeen> anotherIdBeensInitialData() {
+        AnotherIdBeen anotherIdBeen = new AnotherIdBeen();
+        anotherIdBeen.setN("Some text");
+        anotherIdBeen.setAnotherId(1);
+
+        ArrayList<AnotherIdBeen> anotherIdBeens = new ArrayList<>();
+        anotherIdBeens.add(anotherIdBeen); // add same contact 2 times
+        anotherIdBeens.add(anotherIdBeen);
+        return anotherIdBeens;
+    }
+
+    private static void fullTest(ObjectMapper mapper, List testData) throws IOException {
         System.out.println("Serialization tests:");
         System.out.println("Contact      : " + mapper.writeValueAsString(testData.get(0)));
         System.out.println("List<Contact>: " + mapper.writeValueAsString(testData));
